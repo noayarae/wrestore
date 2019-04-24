@@ -1,0 +1,11 @@
+controlGoogleMap/
+cssResponsive/
+ecwMaptest/
+googlecharts/
+googlePlat/
+miscellaneous/
+
+*.pdf
+*.exe
+
+.idea/*
