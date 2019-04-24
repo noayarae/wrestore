@@ -30,8 +30,8 @@ $count = 0;
 // page in a table.
 //$query2 =("SELECT * FROM takefeedback where USERID = '$USERID'");//E: DB for "ecw"
 //$query2 =("SELECT * FROM takefeedback2 where USERID = '$USERID'");//E: DB for "ecw"
-//$query2 =("SELECT * FROM takefeedback3 where USERID = '$USERID'");//E: DB for "ecw" diff error bars
-$query2 =("SELECT * FROM takefeedback4 where USERID = '$USERID'");//E: DB for "ecw" diff error bars
+//$query2 =("SELECT * FROM takefeedback3 where USERID = '$USERID'");//E: DB for "ecw" diff error bars (30% and 70%)
+$query2 =("SELECT * FROM takefeedback4 where USERID = '$USERID'");//E: DB for "ecw" diff error bars (10% and 30%)
 //$query =("SELECT * FROM dmk_db1 where USERID = '$USERID'");//E: DB for Dairy-Mckay
 $result2 = mysqli_query($connection, $query2); //  ???
 $jsonn_array = array();

@@ -57,8 +57,9 @@
     <script src="data/ecw4b.js"></script> <!-- Here goes the JS.File name. var "subbasin_json" -->
     <script src="data/ecw_border.js"></script> <!-- JS.File name. var "Watershed border" -->
     <script src="data/stream_g.js"></script> <!-- Here goes the JS.File name. var "stream_json" -->
-<!--    <script src="data/takefeedback2b.js"></script> <!-- It brings the JS.File name. var "optimiz_json" -->
-    
+    <!-- Below: It brings the JS.File name. var "optimiz_json" -->
+<!--    <script src="data/takefeedback2b.js"></script>-->
+        <script src="data/takefeedback4.js"></script>
     <script type="text/javascript">
         //window.onload(heatinitialize);
         google.load("visualization", "1", {packages:["corechart"]});
@@ -99,7 +100,7 @@
 //// EE: For Option 3, Turn-on 'read_db.php', but NOT 'read_database.php'.
 
 //include ('read_database.php');//EE: Turn-Off when 'database_option' is 2 or 3.
-include ('read_db.php');//EE: TurnOff when 'database_option' is 1 or 2
+//include ('read_db.php');//EE: TurnOff when 'database_option' is 1 or 2
 
 ?>
 
@@ -1191,7 +1192,7 @@ stroke:red; stroke-width:1; fill-opacity:0; stroke-opacity:1"/>-->
 
 <script type="text/javascript">
     //    After selecting "database_option", set the corresponding files in L.95
-    var database_option = 3;//EE: MySQL(as-html) = 1; JSON = 2; MySQL(as-json) = 3
+    var database_option = 2;//EE: MySQL(as-html) = 1; JSON = 2; MySQL(as-json) = 3
     var debug_js = 0;//EE: for debugging set 1
 //    var testing = json_from_mysql;
 //    alert("testing:" + testing);
