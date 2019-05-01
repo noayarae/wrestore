@@ -157,7 +157,9 @@ sup, sub 		{   line-height:0;}
 
 /**** Content Frame ****/
 #mainFrame{ margin:3px 0 3px 0; float:left; display:inline;}
-.mainFrameRightBck{background:url(images/contentAreaBckgrd.gif) repeat-y;}
+.mainFrameRightBck{
+    background:url(images/contentAreaBckgrd.gif) repeat-y;
+}
 
 /**** Main Content Area ****/
 #mainCol{margin:3px 30px 0 0; padding:5px 0 5px 0; width:682px; float:left; display:inline;}
