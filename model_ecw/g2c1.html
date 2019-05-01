@@ -1316,7 +1316,7 @@ stroke:red; stroke-width:1; fill-opacity:0; stroke-opacity:1"/>-->
         //E: For "database_option == 3", nsga2_values_as_json = "json_from_mysql" from "read_db.php", see L.1228
         ///////////////////////////////////////////  RANDOMIZATION  ////////////////////////////////////////
         var nsga2_values_as_json_shuffled;
-       nsga2_values_as_json_shuffled = shuffle1(nsga2_values_as_json);//E: Comment it for not shuffling
+       // nsga2_values_as_json_shuffled = shuffle1(nsga2_values_as_json);//E: Comment it for not shuffling
         if (nsga2_values_as_json_shuffled) {
             nsga2_values_as_json = nsga2_values_as_json_shuffled;
             alert ("L.1298  Shuffling...");
