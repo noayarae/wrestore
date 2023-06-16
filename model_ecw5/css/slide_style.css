@@ -1,0 +1,63 @@
+.slidecontainer {
+    width: 200px;
+    padding: 10px 5px 0px 5px;
+    border: 1px solid #ff6600;/*#0000cc;*/
+    background: #fff5cc;
+}
+.slider {
+    -webkit-appearance: none;
+    width: 97%;
+    height: 2px;
+    background: #e6e6e6;/*#d3d3d3;*/
+    border: 1px solid #666666;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+}
+.slider:hover {
+    opacity: 1;
+}
+.slider::-webkit-slider-thumb {/*This is for button on the slide (Chrome)*/
+    -webkit-appearance: none;
+    appearance: none;
+    width: 35px;
+    height: 14px;
+    background: #b3b3b3;/*#4CAF50;*/
+    border: 1px solid #000000;
+    border-radius: 2px;
+    cursor: pointer;
+    /*z-index: 10;*/
+}
+.slider::-moz-range-thumb {/*This is for button on the slide (Firefox)*/
+    width: 35px;
+    height: 14px;
+    background: #b3b3b3;/*#4CAF50;*/
+    border: 1px solid #000000;
+    border-radius: 2px;
+    cursor: pointer;
+    /*z-index: 10;*/
+}
+.sliderticks {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 6px;/*This sets the gap between ticks and slide*/
+    padding-right: 22px;/* This sets the gap from the right-tick */
+    padding-bottom: 0px;
+    padding-left: 20px;/*This sets the gap from the left-tick*/
+    /*padding: 0 22px 0 20px;*/
+    /*z-index: 0;*/
+}
+.sliderticks p {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    width: 1px;
+    background: #000000;/*#D3D3D3;*/
+    height: 5px;/* This sets the heigh of ticks */
+    line-height: 23px; /*This sets the gap between ticks and labels */
+    margin: 0 0 14px 0;
+    font-size: 12px;
+    /*z-index: 0;*/
+}
