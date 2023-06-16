@@ -1,0 +1,1737 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <!--  Style for icons  -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!--  Styles for layer frame  -->
+    <link rel="stylesheet" type="text/css" href="css/style.css"/>
+    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Oswald:400,300' type='text/css'>
+
+    <style>
+        html, body { height:100%; width:100%;}
+
+        /* Set the size of the div element that contains the map */
+        #map_div {
+            width:100%;
+            height:95%;
+            position: relative;
+            top: 5px;/* This was given for showing the tittle */
+            left: 0px;
+        }
+    </style>
+
+    <!--    DATA    -->
+    <!-- (1)DATA for watershed   -->
+    <script src="data/dmw_watershed_data/dmw_border.js"></script> <!-- JS.File name. var "Watershed border" -->
+    <script src="data/dmw_watershed_data/dmw_sb.js"></script> <!-- JS.File name. var "Watershed sub-basins" -->
+    <script src="data/dmw_watershed_data/dmw_stream.js"></script> <!-- JS.File name. var "Watershed streams" -->
+
+    <!-- (2)Data for Government units -->
+    <script src="data/dmw_gov_units_data/or_state_js.js"></script>
+    <script src="data/dmw_gov_units_data/or_county_js.js"></script>
+    <script src="data/dmw_gov_units_data/or_cities_js.js"></script>
+    <!-- (3)Data for monitoring points  -->
+    <script src="data/dmw_monitoring-points_data/dmw_weather2.js"></script> <!-- JS.File name. var "Weather points" -->
+    <script src="data/dmw_monitoring-points_data/dmw_stream_stations2.js"></script> <!-- JS.File name. var "stream station points" -->
+    <!--    <script src="data/dmw_other_stations.js"></script> &lt;!&ndash; JS.File name. var "other station points" &ndash;&gt;-->
+
+    <!-- (4)Data for "Potential and Existing Wetlands map" -->
+    <script src="data/dmw_wetlands_data/dmw_existing_wets.js"></script> <!-- JS.File name. var "potential wetlands" -->
+    <script src="data/dmw_wetlands_data/dmw_potwet_1.js"></script> <!-- JS.File name. var "potential wetlands" -->
+
+    <!-- (5)Data for "LULC map" -->
+
+    <!-- (6)Data for "Soil map" -->
+<!--    <script src="data/dmw_soil_data/dmw_soil_drain.js"></script>-->
+<!--    <script src="data/dmw_soil_data/dmw_soil_hydro.js"></script>-->
+
+
+</head>
+
+<body>
+<h3 style="margin: 5px 10px">Dairy McKay Watershed</h3>
+<!--The div element for the map -->
+<div id="map_div"></div>
+
+<!--  VOLADIZOS  -->
+
+<!--  (1) Voladizo 1: SVGs for representing Polygon, Polylines and Points into the main map -->
+<!--  Start SVG  -->
+<div>
+    <!--  For WATERSHED border  -->
+    <svg id="rectangle_border" width="30" height="15">
+        <!-- create a rectangle with rounded corners. Retrieved from: https://www.w3schools.com/graphics/svg_rect.asp -->
+        <!-- Set "fill-opacity:0; stroke-opacity:0" to not see the DOM box -->
+        <rect x="1" y="1" rx="1" ry="1" width="24" height="12"
+              style="fill:#88ff4d; fill-opacity:0.1;
+              stroke:#800000; stroke-width:2; stroke-opacity:1"/>
+        <!--        <rect x="x-coord y="y-coord" rx="x-radius" ry="y-radius" width="w-box" height="h-box" style="fill:yellow;
+        stroke:red; stroke-width:1; fill-opacity:0; stroke-opacity:1"/>-->
+    </svg>
+
+    <!--  For SUB-BASINs -->
+    <svg id="rectangle_sb" width="30" height="15">
+        <!-- create a rectangle with rounded corners. Retrieved from: https://www.w3schools.com/graphics/svg_rect.asp -->
+        <!-- Set "fill-opacity:0; stroke-opacity:0" to not see the DOM box -->
+        <rect x="1" y="1" rx="0" ry="0" width="24" height="12"
+              style="fill:#66ff1a; fill-opacity:0.2; stroke:#800000; stroke-width:1; stroke-opacity:1"/>
+        <!--        <rect x="x-coord y="y-coord" rx="x-radius" ry="y-radius" width="w-box" height="h-box" style="fill:yellow;
+        stroke:red; stroke-width:1; fill-opacity:0; stroke-opacity:1"/>-->
+    </svg>
+
+    <!--  For Rivers Streams -->
+    <svg id="line_stream" height="15" width="40">
+        <line x1="2" y1="8" x2="36" y2="8"
+              style="stroke:#0052cc; stroke-width:2; stroke-opacity:1"/>
+    </svg>
+
+    <!--  For STATE -->
+    <svg id="rectangle_state" width="30" height="15">
+        <!-- create a rectangle with rounded corners. Retrieved from: https://www.w3schools.com/graphics/svg_rect.asp -->
+        <!-- Set "fill-opacity:0; stroke-opacity:0" to not see the DOM box -->
+        <rect x="1" y="1" rx="1" ry="1" width="24" height="12"
+              style="fill:#cccccc; fill-opacity:0.1;
+              stroke:#262626; stroke-width:2; stroke-opacity:1"/>
+    </svg>
+
+    <!--  For COUNTY -->
+    <svg id="rectangle_county" width="30" height="15">
+        <!-- create a rectangle with rounded corners. Retrieved from: https://www.w3schools.com/graphics/svg_rect.asp -->
+        <!-- Set "fill-opacity:0; stroke-opacity:0" to not see the DOM box -->
+        <rect x="1" y="1" rx="1" ry="1" width="24" height="12"
+              style="fill:#b3b3b3; fill-opacity:0.2;
+              stroke:#262626; stroke-width:1; stroke-opacity:1/*; stroke-dasharray: 6,2*/"/>
+    </svg>
+
+    <!--  For CITIES -->
+    <svg id="rectangle_cities" width="30" height="15">
+        <!-- create a rectangle with rounded corners. Retrieved from: https://www.w3schools.com/graphics/svg_rect.asp -->
+        <!-- Set "fill-opacity:0; stroke-opacity:0" to not see the DOM box -->
+        <rect x="1" y="1" rx="1" ry="1" width="24" height="12"
+              style="fill:#808080; fill-opacity:0.7; stroke:#333333; stroke-width:0.5; stroke-opacity:0.3"/>
+    </svg>
+
+    <!--  For WEATHER stations  -->
+    <!--<div style="display: none">-->
+    <svg id="triangle1" width="20" height="14">
+        <!-- Set "fill-opacity:0; stroke-opacity:0" to not see the DOM box -->
+        <polygon points="7,1 13,13 1,13"
+              style="fill:#ff471a; fill-opacity:0.7; stroke:#ff3300; stroke-width:2; stroke-opacity:1"/>
+    </svg>
+
+    <svg id="label_rect" width="25" height="15">
+        <!-- create a rectangle with rounded corners. Retrieved from: https://www.w3schools.com/graphics/svg_rect.asp -->
+        <!-- Set "fill-opacity:0; stroke-opacity:0" to not see the DOM box -->
+        <rect x="1" y="1" rx="2" ry="2" width="8" height="8"
+              style="fill:yellow; fill-opacity:0; stroke:black; stroke-width:1; stroke-opacity:0"/>
+        Sorry, your browser does not support inline SVG.
+    </svg>
+
+    <!--  For STREAM stations  -->
+    <svg id="circle1" width="20" height="15">
+        <!-- Set "fill-opacity:0; stroke-opacity:0" to not see the DOM box -->
+        <circle cx="7" cy="7" r="6"
+                 style="fill:#0000cc; fill-opacity:0.7; stroke:#0000b3; stroke-width:2; stroke-opacity:1"/>
+    </svg>
+
+    <svg id="label_rect2" width="25" height="15">
+        <!-- create a rectangle with rounded corners. Retrieved from: https://www.w3schools.com/graphics/svg_rect.asp -->
+        <!-- Set "fill-opacity:0; stroke-opacity:0" to not see the DOM box -->
+        <rect x="1" y="1" rx="2" ry="2" width="8" height="8"
+              style="fill:yellow; fill-opacity:0; stroke:black; stroke-width:1; stroke-opacity:0"/>
+        Sorry, your browser does not support inline SVG.
+    </svg>
+</div>
+<!--  End SVG - Voladizo (1) -->
+
+
+<!--  (2) Start: Voladizo 2: Set icon for check box  -->
+<!--  id 'frame2' is called from javascript code (see L.515)  -->
+<div id="frame2" class="frame2">
+    <div id="layer_h">
+        <div style="padding: 4px"><h5>Layers</h5></div>
+    </div>
+
+    <!--  CAPA #1  Watershed -->
+    <div id="capa_1">
+        <div id="tt" class="capa_1_h">
+            <input id="watershed_list" type="checkbox" name="watershed" onchange="wtshd_check()">
+            <label for="watershed_list">Watershed</label>
+            <span style="float: right" onclick="dropdown_sublist_watershed_checkboxs('capa_1_items','capa_1_arrow')">
+                <i id="capa_1_arrow" style="font-size:20px" class="fa">&#xf106;</i>
+            </span>
+        </div>
+        <ul id="capa_1_items" style="list-style-type:none;" class="list_items">
+            <li id="L1_item1" class="item">
+                <input id="border" type="checkbox" name="watershed" onchange="watershed_item_check()">
+                <label for="border">Basin</label>
+                <span id="border_symb" style="float: right"></span>
+                <script>
+                    var border_symb = document.getElementById("rectangle_border");
+                    document.getElementById("border_symb").appendChild(border_symb);//E:
+                </script>
+            </li>
+            <hr>
+            <li id="L1_item2" class="item">
+                <input id="subbasins" type="checkbox" name="subbasins" onchange="watershed_item_check()">
+                <label for="subbasins">Sub-basins</label>
+                <span id="sbbn_symb" style="float: right"></span>
+                <script>
+                    var sbbn_symb = document.getElementById("rectangle_sb");
+                    document.getElementById("sbbn_symb").appendChild(sbbn_symb);//E:
+                </script>
+            </li>
+            <hr>
+            <li id="L1_item3" class="item">
+                <input id="rivers" type="checkbox" name="rivers" onchange="watershed_item_check()">
+                <label for="rivers">Streams</label>
+                <span id="river_symb" style="float: right"></span>
+                <script>
+                    var river_symb = document.getElementById("line_stream");
+                    document.getElementById("river_symb").appendChild(river_symb);//E:
+                </script>
+            </li>
+        </ul>
+    </div>
+
+    <!--  ------------  CAPA #2 Gov. units-------------  -->
+    <div id="capa_2">
+        <div class="capa_2_h">
+            <input id="geopol_list" class="input" type="checkbox" name="geopol" onchange="capa_check(this)">
+            <label for="geopol_list">Government Units</label>
+            <span style="float: right" onclick="dropdown_sublist_watershed_checkboxs('capa_2_items','capa_2_arrow')">
+                <i id="capa_2_arrow" style="font-size:20px" class="fa">&#xf106;</i>
+            </span>
+        </div>
+        <ul id="capa_2_items" style="list-style-type:none;" class="list_items">
+            <li id="L2_item1" class="item">
+                <input id="us_states" class="input" type="checkbox" name="us_states" onchange="capa_item_check(this)">
+                <label for="us_states">States</label>
+                <span id="state_symb" style="float: right"></span>
+                <script>
+                    var state_symb = document.getElementById("rectangle_state");
+                    document.getElementById("state_symb").appendChild(state_symb);//E:
+                </script>
+            </li>
+            <hr>
+            <li id="L2_item2" class="item">
+                <input id="us_counties" class="input" type="checkbox" name="us_counties" onchange="capa_item_check(this)">
+                <label for="us_counties">Counties</label>
+                <span id="county_symb" style="float: right"></span>
+                <script>
+                    var county_symb = document.getElementById("rectangle_county");
+                    document.getElementById("county_symb").appendChild(county_symb);//E:
+                </script>
+            </li>
+            <hr>
+            <li id="L2_item3" class="item">
+                <input id="ugb" class="input" type="checkbox" name="Urban_Growth_Boundary" onchange="capa_item_check(this)">
+                <label for="ugb">Urban Boundary</label>
+                <span id="ugb_symb" style="float: right"></span>
+                <script>
+                    var ugb_symb = document.getElementById("rectangle_cities");
+                    document.getElementById("ugb_symb").appendChild(ugb_symb);//E:
+                </script>
+            </li>
+        </ul>
+    </div>
+
+    <!--  ------------  CAPA #3 Monitoring Points-------------  -->
+    <div id="capa_3">
+        <div class="capa_3_h">
+            <input id="stations_list" class="input"  type="checkbox" name="stations" onchange="capa_check(this)">
+            <label for="stations_list">Monitoring Points</label>
+            <span style="float: right" onclick="dropdown_sublist_watershed_checkboxs('capa_3_items','capa_3_arrow')">
+                <i id="capa_3_arrow" style="font-size:20px" class="fa">&#xf106;</i>
+            </span>
+        </div>
+        <ul id="capa_3_items" style="list-style-type:none;" class="list_items">
+            <li id="L3_item1" class="item">
+                <input id="weather" class="input"  type="checkbox" name="weather" onchange="capa_item_check(this)">
+                <label for="weather">Weather station </label>
+                <span id="ws_symb" style="float: right"></span>
+                <script>
+                    var ws_symb = document.getElementById("triangle1");
+                    document.getElementById("ws_symb").appendChild(ws_symb);//E:
+                </script>
+            </li>
+            <hr>
+            <li id="L3_item2" class="item">
+                <input id="stream_st" class="input"  type="checkbox" name="stream_st" onchange="capa_item_check(this)">
+                <label for="stream_st">Stream station</label>
+                <span id="ss_symb" style="float: right"></span>
+                <script>
+                    var ss_symb = document.getElementById("circle1");
+                    document.getElementById("ss_symb").appendChild(ss_symb);//E:
+                </script>
+            </li>
+            <hr>
+            <li id="L3_item3" class="item">
+                <input id="wq_stn" class="input"  type="checkbox" name="wq_stn" onchange="capa_item_check(this)">
+                <label for="wq_stn">Water quality station</label>
+            </li>
+        </ul>
+    </div>
+
+    <!--  ------------  CAPA #4 Wetlands -------------  -->
+    <div id="capa_4">
+        <div class="capa_4_h">
+            <input id="wetlands_list" class="input" type="checkbox" name="wetlands_list" onchange="capa_check(this)">
+            <label for="wetlands_list">Wetlands</label>
+            <span style="float: right" onclick="dropdown_sublist_watershed_checkboxs('capa_4_items','capa_4_arrow')">
+                <i id="capa_4_arrow" style="font-size:20px" class="fa">&#xf106;</i>
+            </span>
+        </div>
+        <ul id="capa_4_items" style="list-style-type:none;" class="list_items">
+            <li id="L4_item1" class="item">
+                <input id="existing_wets" class="input" type="checkbox" name="existing_wets" onchange="capa_item_check(this)">
+                <label for="existing_wets">Existing Wetlands</label>
+            </li>
+            <hr>
+            <li id="L4_item2" class="item">
+                <input id="pot_wets" class="input" type="checkbox" name="pot_wets" onchange="capa_item_check(this)">
+                <label for="pot_wets">Potential Wetlands</label>
+            </li>
+            <hr>
+        </ul>
+    </div>
+
+    <!--  ------------  CAPA #5 LAnd Use -------------  -->
+    <div id="capa_5">
+        <div class="capa_5_h">
+            <input id="lulc" class="input" type="checkbox" name="lulc" onchange="capa_check(this)">
+            <label for="lulc">Land Use</label>
+            <span style="float: right" onclick="dropdown_sublist_watershed_checkboxs('capa_5_items','capa_5_arrow')">
+                <i id="capa_5_arrow" style="font-size:20px" class="fa">&#xf106;</i>
+            </span>
+        </div>
+        <ul id="capa_5_items" style="list-style-type:none;" class="list_items">
+            <li id="L5_item1" class="item">
+                <input id="land_cover" class="input" type="checkbox" name="land_cover" onchange="capa_item_check(this)">
+                <label for="land_cover">Land Cover</label>
+            </li>
+            <hr>
+            <li id="L5_item2" class="item">
+                <input id="cropland" class="input" type="checkbox" name="cropland" onchange="capa_item_check(this)">
+                <label for="cropland">Crop Land</label>
+            </li>
+            <hr>
+        </ul>
+    </div>
+
+    <!--  ------------  CAPA #6 Soil -------------  -->
+    <div id="capa_6">
+        <div class="capa_6_h">
+            <input id="soils" class="input" type="checkbox" name="soils" onchange="capa_check(this)">
+            <label for="soils">Soil (SSURGO)</label>
+            <span style="float: right" onclick="dropdown_sublist_watershed_checkboxs('capa_6_items','capa_6_arrow')">
+                <i id="capa_6_arrow" style="font-size:20px" class="fa">&#xf106;</i>
+            </span>
+        </div>
+        <ul id="capa_6_items" style="list-style-type:none;" class="list_items">
+            <li id="L6_item1" class="item">
+                <input id="ssurgo" class="input" type="checkbox" name="ssurgo" onchange="capa_item_check(this)">
+                <label for="ssurgo">By drainage group</label>
+            </li>
+            <hr>
+            <li id="L6_item2" class="item">
+                <input id="drainage" class="input" type="checkbox" name="drainage" onchange="capa_item_check(this)">
+                <label for="drainage">By hydrologic soil group</label>
+            </li>
+            <hr>
+        </ul>
+    </div>
+
+</div>
+<!--  End: Voladizo 2: Set icon for check box  -->
+<!--  End SVG - Voladizo (2) -->
+
+
+<!--  Start: Voladizo 3:   -->
+<!--  End: Voladizo 3:   -->
+
+<script>
+    function dropdown_sublist_watershed_checkboxs(layer,arrow){
+        // alert ("here");
+        // if (document.getElementById("capa_1_items").style.display == 'none'){
+        if (document.getElementById(layer).style.display == 'none'){
+            // alert ("Action: open ;  display_attribute: "+ document.getElementById("table_watershed").style.display);//E: For test
+            // document.getElementById("capa_1_items").style.display = 'block';
+            // document.getElementById("capa_1_arrow").innerHTML = '&#xf106';//E: 107 down
+            document.getElementById(layer).style.display = 'block';
+            document.getElementById(arrow).innerHTML = '&#xf106';//E: 107 down
+        } else {
+            // alert ("Action: close");//E: For test
+            // document.getElementById("capa_1_items").style.display = 'none';
+            // document.getElementById("capa_1_arrow").innerHTML = '&#xf107';//E: 106 up
+            document.getElementById(layer).style.display = 'none';
+            document.getElementById(arrow).innerHTML = '&#xf107';//E: 106 up
+        }
+    }
+</script>
+
+<script>
+    // ----------- Start: Functions for CAPA #1 (Watershed) ------------//
+    //E: This function does logical combination of checks in 'watershed' list
+    function wtshd_check(){
+        var w1 = document.getElementById("watershed_list");//E: not needed because it is same as 'obj'
+        if(w1.checked){
+            document.getElementById("border").checked = true;
+            document.getElementById("subbasins").checked = true;
+            document.getElementById("rivers").checked = true;
+            // watershed_border.setMap(basemap);
+        }else{
+            // alert("Un checking ALL"); //when not checked
+            document.getElementById("border").checked = false;
+            document.getElementById("subbasins").checked = false;
+            document.getElementById("rivers").checked = false;
+        }
+    }
+
+    function watershed_item_check() {
+        // alert("L.218 here");
+        var e1 = document.getElementById("border");
+        var e2 = document.getElementById("subbasins");
+        var e3 = document.getElementById("rivers");
+
+        if(e1.checked||e2.checked||e3.checked){
+            // alert("L.224 Yes checked: "+ obj.name); //when checked
+            document.getElementById("watershed_list").checked = true;
+        }else{
+            // alert("L.228 Not checked"); //when not checked
+            document.getElementById("watershed_list").checked = false;
+        }
+    }
+    // ---------------- End: Functions for CAPA #1 -----------------//
+
+
+    // ----------- Start: Functions for CAPA #2, #3, etc (Gov. units) ------------//
+    //// E: This function does logical combination of checks in 'watershed' list
+    function capa_check(obj){
+        var grandparendNode = obj.parentNode.parentNode.id;//E: get "capa_2"
+        // alert("parent DOM: "+ grandparendNode);//E: show "capa_2"
+        var all_inputsArray = document.getElementById(grandparendNode).querySelectorAll(".input");
+        // alert("all_inputs size: " + all_inputsArray.length);
+
+        if(obj.checked){
+            for (var i = 1; i < all_inputsArray.length; i++){
+                all_inputsArray[i].checked = true;
+            }
+        }else{
+            for (var i = 1; i < all_inputsArray.length; i++){
+                all_inputsArray[i].checked = false;
+            }
+        }
+    }
+
+    function capa_item_check(obj) {
+        var gg_parendNode = obj.parentNode.parentNode.parentNode.id;//E: get "capa_2"
+        // alert("parent DOM: "+ gg_parendNode);//E: show "capa_2"
+        var all_inputsArray = document.getElementById(gg_parendNode).querySelectorAll(".input");
+        // alert("all_inputs size: " + all_inputsArray.length);
+
+        var ss = "none";//E: For test
+        var ss2 = 0;
+        for (var i = 1; i < all_inputsArray.length; i++){
+            if(all_inputsArray[i].checked){
+                // ss = "someone is checked";
+                ss2 = 1;//E: 'ss2' = 1, when some item-box is checked
+            }
+        }
+
+        if(ss2 == 0){//E: if 'ss2==0' is because some item-box is checked
+            all_inputsArray[0].checked = false;
+        }else{
+            all_inputsArray[0].checked = true;
+        }
+    }
+    // ------------- End: Functions for CAPA #2, #3, etc (Gov.units) ------------//
+
+</script>
+
+
+<script>
+    var watershed_border;//E: Important to define this variable here, to get dynamic mapping. If it is no defined here but below when we set "watershed_border = new google.maps.Polygon({", The map is not displayed when it is clicked from "dmw_features.html"
+    var watershed_border_Array = [];
+    var subbasin_layer;
+    var subbasin_layer_Array = [];
+    var stream_layer;
+    var stream_layer_Array = [];
+
+    var states_layer;
+    var states_layer_Array = [];
+    var county_layer;
+    var county_layer_Array = [];
+    var city_layer;
+    var city_layer_Array = [];
+
+    var weather_points_Array1 = [];
+    var weather_points_Array2 = [];
+    var stream_st_points_Array1 = [];
+    var stream_st_points_Array2 = [];
+
+    var exist_wets_layer;
+    var exist_wets_layer_Array = [];
+    var potential_wet1_layer;
+    var potential_wet1_layer_Array = [];
+
+    var soilDrain_layer;
+    var soilDrain_layer_Array = [];
+    var soilhydro_layer;
+    var soilhydro_layer_Array = [];
+
+    weather_icon = svg_to_img2('triangle1');//E: It takes DOM with id="triangle1" from above
+    label_icon = svg_to_img2('label_rect');//E: It retrieves DOM with id="label_rect" from above
+    stream_st_icon = svg_to_img2('circle1');//E: It takes DOM with id="circle1" from above
+    label_icon2 = svg_to_img2('label_rect2');//E: It retrieves DOM with id="label_rect2" from above
+    function svg_to_img2(arg1) {
+        var svg = document.getElementById(arg1);
+        var xml = new XMLSerializer().serializeToString(svg);
+        var svg64 = btoa(xml); //for utf8: btoa(unescape(encodeURIComponent(xml)))
+        var b64start = 'data:image/svg+xml;base64,';
+        var image64 = b64start + svg64;
+        return image64;
+    }
+
+
+    // Initialize and add the map
+    function initMap() {
+        // ----------------- Start: build basemap -----------------//
+        var basemap = new google.maps.Map(document.getElementById('map_div'), {
+            center: new google.maps.LatLng(45.65, -123.1),//E: center for "Dairy-Mckay"
+            zoom: 10.5,
+            streetViewControl: false,//E: Disable street-view walk
+            zoomControlOptions: {
+                position: google.maps.ControlPosition.TOP_LEFT
+            },
+        });
+        // ---------------- End: build basemap ---------------------//
+
+        // ========================== Start: Make dynamic when checkbox is clicked ========================== //
+        // ---------------------- E: Set Layer-panel by using html (see Voladizo 1) ----------------
+        var frame2 = document.getElementById("frame2");
+        // ----------------- E: Set (push) the layer-panel into the map
+        basemap.controls[google.maps.ControlPosition.TOP_RIGHT].push(frame2); //E:Placing the "frame" div into te map
+
+        // google.maps.event.addDomListener(frame, 'click', function () { //E: Add event "frame" to the map
+        //     //Do something
+        // });//E: not neede for now
+        //=================
+
+
+        // --------------- Start: Dynamic of (1) Watershed ------------------- //
+        var L1_item1 = document.getElementById("L1_item1");
+        var border = document.getElementById("border");
+        var L1_item2 = document.getElementById("L1_item2");
+        var subbasins = document.getElementById("subbasins");
+        var L1_item3 = document.getElementById("L1_item3");
+        var rivers = document.getElementById("rivers");
+        var capa_1_checkbox = document.getElementById("watershed_list");//E: Capa 1 checkbox
+
+        google.maps.event.addDomListener(L1_item1,'click',function(){
+            if (border.checked){
+                watershed_border.setMap(basemap);
+            }else{
+                watershed_border.setMap(null);
+            }
+        });
+
+        google.maps.event.addDomListener(L1_item2,'click',function(){
+            if (subbasins.checked){
+                // alert("here");
+                for (var i = 0; i < subbasin_json.features.length; i++){
+                    subbasin_layer_Array[i].setMap(basemap);//E: IT SETS THE POLYGONS over the BASEMAP
+                }
+            }else{
+                // alert("here else");
+                for (var i = 0; i < subbasin_json.features.length; i++){
+                    subbasin_layer_Array[i].setMap(null);//E: IT SETS THE POLYGONS over the BASEMAP
+                }
+            }
+        });
+        //
+        google.maps.event.addDomListener(L1_item3,'click',function(){
+            if (rivers.checked){
+                for (var i = 0; i < stream_json.features.length; i++){
+                    stream_layer_Array[i].setMap(basemap);//E: IT SETS THE POLYGONS over the BASEMAP
+                }
+            }else{
+                for (var i = 0; i < stream_json.features.length; i++){
+                    //E: Set the previous polygons into the basemap
+                    stream_layer_Array[i].setMap(null);//E: IT SETS THE POLYGONS over the BASEMAP
+                }
+            }
+        });
+
+        //EE: Google-click event to draw or undraw when 'capa_1_checkbox' is clicked. This draws or
+        // cleans everything (all maps) from watershed
+        google.maps.event.addDomListener(capa_1_checkbox,'click',function(){
+            if (capa_1_checkbox.checked){
+                watershed_border.setMap(basemap);
+                for (var i = 0; i < subbasin_json.features.length; i++){
+                    subbasin_layer_Array[i].setMap(basemap);//E: IT SETS THE POLYGONS over the BASEMAP
+                }
+                for (var i = 0; i < stream_json.features.length; i++){
+                    stream_layer_Array[i].setMap(basemap);//E: IT SETS THE POLYGONS over the BASEMAP
+                }
+            }else{
+                watershed_border.setMap(null);
+                for (var i = 0; i < subbasin_json.features.length; i++){
+                    subbasin_layer_Array[i].setMap(null);//E: IT SETS THE POLYGONS over the BASEMAP
+                }
+                for (var i = 0; i < stream_json.features.length; i++){
+                    //E: Set the previous polygons into the basemap
+                    stream_layer_Array[i].setMap(null);//E: IT SETS THE POLYGONS over the BASEMAP
+                }
+            }
+        });
+
+        // --------------- End: Dynamic of (1) Watershed ------------------- //
+
+
+
+        // --------------- Start: Dynamic of (2) Gov units ------------------- //
+
+        var L2_item1 = document.getElementById("L2_item1");
+        var us_states = document.getElementById("us_states");
+        var L2_item2 = document.getElementById("L2_item2");
+        var us_counties = document.getElementById("us_counties");
+        var L2_item3 = document.getElementById("L2_item3");
+        var ugb = document.getElementById("ugb");
+        var capa_2_checkbox = document.getElementById("geopol_list");//E: Capa 1 checkbox
+
+        google.maps.event.addDomListener(L2_item1,'click',function(){
+            if (us_states.checked){
+                for (var i = 0; i < states_json.features.length; i++){
+                    states_layer_Array[i].setMap(basemap);//E: IT SETS THE POLYGONS over the BASEMAP
+                }
+            }else{
+                for (var i = 0; i < states_json.features.length; i++){
+                    states_layer_Array[i].setMap(null);//E: IT SETS THE POLYGONS over the BASEMAP
+                }
+            }
+        });
+
+        google.maps.event.addDomListener(L2_item2,'click',function(){
+            if (us_counties.checked){
+                for (var i = 0; i < counties_json.features.length; i++){
+                    county_layer_Array[i].setMap(basemap);//E: IT SETS THE POLYGONS over the BASEMAP
+                }
+            }else{
+                // alert("here else");
+                for (var i = 0; i < counties_json.features.length; i++){
+                    county_layer_Array[i].setMap(null);//E: IT SETS THE POLYGONS over the BASEMAP
+                }
+            }
+        });
+        //
+        google.maps.event.addDomListener(L2_item3,'click',function(){
+            if (ugb.checked){
+                for (var i = 0; i < or_cities_json.features.length; i++){
+                    city_layer_Array[i].setMap(basemap);//E: IT SETS THE POLYGONS over the BASEMAP
+                }
+            }else{
+                for (var i = 0; i < or_cities_json.features.length; i++){
+                    //E: Set the previous polygons into the basemap
+                    city_layer_Array[i].setMap(null);//E: IT SETS THE POLYGONS over the BASEMAP
+                }
+            }
+        });
+
+        //EE: Google-click event to draw or undraw when 'capa_1_checkbox' is clicked. This draws or
+        // cleans everything (all maps) from watershed
+        google.maps.event.addDomListener(capa_2_checkbox,'click',function(){
+            if (capa_2_checkbox.checked){
+                for (var i = 0; i < states_json.features.length; i++){
+                    states_layer_Array[i].setMap(basemap);//E: IT SETS THE POLYGONS over the BASEMAP
+                }
+                for (var i = 0; i < counties_json.features.length; i++){
+                    county_layer_Array[i].setMap(basemap);//E: IT SETS THE POLYGONS over the BASEMAP
+                }
+                for (var i = 0; i < or_cities_json.features.length; i++){
+                    city_layer_Array[i].setMap(basemap);//E: IT SETS THE POLYGONS over the BASEMAP
+                }
+            }else{
+                for (var i = 0; i < states_json.features.length; i++){
+                    states_layer_Array[i].setMap(null);//E: IT SETS THE POLYGONS over the BASEMAP
+                }
+                for (var i = 0; i < counties_json.features.length; i++){
+                    county_layer_Array[i].setMap(null);//E: IT SETS THE POLYGONS over the BASEMAP
+                }
+                for (var i = 0; i < or_cities_json.features.length; i++){
+                    //E: Set the previous polygons into the basemap
+                    city_layer_Array[i].setMap(null);//E: IT SETS THE POLYGONS over the BASEMAP
+                }
+            }
+        });
+
+        // --------------- End: Dynamic of (2) Gov. Units ------------------- //
+
+
+
+        // --------------- Start: Dynamic of (3) Monitoring Points ------------------- //
+
+        var L3_item1 = document.getElementById("L3_item1");
+        var weather = document.getElementById("weather");
+        var L3_item2 = document.getElementById("L3_item2");
+        var stream_st = document.getElementById("stream_st");
+        var L3_item3 = document.getElementById("L3_item3");
+        var wq_stn = document.getElementById("wq_stn");
+        var capa_3_checkbox = document.getElementById("stations_list");//E: Capa 1 checkbox
+
+        google.maps.event.addDomListener(L3_item1,'click',function(){
+            if (weather.checked){
+                for (var i = 0; i < weather_points_json.features.length; i++){
+                    weather_points_Array1[i].setMap(basemap);//E: IT SETS THE POLYGONS over the BASEMAP
+                }
+            }else{
+                for (var i = 0; i < weather_points_json.features.length; i++){
+                    weather_points_Array1[i].setMap(null);//E: IT SETS THE POLYGONS over the BASEMAP
+                }
+            }
+        });
+
+        google.maps.event.addDomListener(L3_item2,'click',function(){
+            if (stream_st.checked){
+                for (var i = 0; i < stream_points_json.features.length; i++){
+                    stream_st_points_Array1[i].setMap(basemap);//E: IT SETS THE POLYGONS over the BASEMAP
+                }
+            }else{
+                // alert("here else");
+                for (var i = 0; i < stream_points_json.features.length; i++){
+                    stream_st_points_Array1[i].setMap(null);//E: IT SETS THE POLYGONS over the BASEMAP
+                }
+            }
+        });
+
+        // //E: This is for WQ (not implemented yet
+        // google.maps.event.addDomListener(L3_item3,'click',function(){
+        //     if (wq_stn.checked){
+        //         for (var i = 0; i < xxxxxxxx.features.length; i++){
+        //             xxxxxxxxx[i].setMap(basemap);//E: IT SETS THE POLYGONS over the BASEMAP
+        //         }
+        //     }else{
+        //         for (var i = 0; i < xxxxxxxxxxxx.features.length; i++){
+        //             //E: Set the previous polygons into the basemap
+        //             xxxxxxxxxxxxxxxx[i].setMap(null);//E: IT SETS THE POLYGONS over the BASEMAP
+        //         }
+        //     }
+        // });
+
+        //EE: Google-click event to draw or undraw when 'capa_3_checkbox' is clicked. This draws or
+        // cleans everything (all maps) from watershed
+        google.maps.event.addDomListener(capa_3_checkbox,'click',function(){
+            if (capa_3_checkbox.checked){
+                for (var i = 0; i < weather_points_json.features.length; i++){
+                    weather_points_Array1[i].setMap(basemap);//E: IT SETS THE POLYGONS over the BASEMAP
+                }
+                for (var i = 0; i < stream_points_json.features.length; i++){
+                    stream_st_points_Array1[i].setMap(basemap);//E: IT SETS THE POLYGONS over the BASEMAP
+                }
+                // for (var i = 0; i < xxxxxxxxx.features.length; i++){
+                //     xxxxxxxxxxx[i].setMap(basemap);//E: IT SETS THE POLYGONS over the BASEMAP
+                // }
+            }else{
+                for (var i = 0; i < weather_points_json.features.length; i++){
+                    weather_points_Array1[i].setMap(null);//E: IT SETS THE POLYGONS over the BASEMAP
+                }
+                for (var i = 0; i < stream_points_json.features.length; i++){
+                    stream_st_points_Array1[i].setMap(null);//E: IT SETS THE POLYGONS over the BASEMAP
+                }
+                // for (var i = 0; i < xxxxxxxxxxxx.features.length; i++){
+                //     //E: Set the previous polygons into the basemap
+                //     xxxxxxxxxxxx[i].setMap(null);//E: IT SETS THE POLYGONS over the BASEMAP
+                // }
+            }
+        });
+
+        // --------------- End: Dynamic of (3) Monitoring Points ------------------- //
+
+
+
+        // --------------- Start: Dynamic of (4) Wetlands Pot&Existing ------------------- //
+
+        var L4_item1 = document.getElementById("L4_item1");
+        var existing_wets = document.getElementById("existing_wets");
+        var L4_item2 = document.getElementById("L4_item2");
+        var pot_wets = document.getElementById("pot_wets");
+        var capa_4_checkbox = document.getElementById("wetlands_list");//E: Capa 1 checkbox
+
+        google.maps.event.addDomListener(L4_item1,'click',function(){
+            if (existing_wets.checked){
+                for (var i = 0; i < exist_wets_json.features.length; i++){
+                    exist_wets_layer_Array[i].setMap(basemap);//E: IT SETS THE POLYGONS over the BASEMAP
+                }
+            }else{
+                for (var i = 0; i < exist_wets_json.features.length; i++){
+                    exist_wets_layer_Array[i].setMap(null);//E: IT SETS THE POLYGONS over the BASEMAP
+                }
+            }
+        });
+
+        google.maps.event.addDomListener(L4_item2,'click',function(){
+            if (pot_wets.checked){
+                for (var i = 0; i < potwet_1_json.features.length; i++){
+                    potential_wet1_layer_Array[i].setMap(basemap);//E: IT SETS THE POLYGONS over the BASEMAP
+                }
+            }else{
+                for (var i = 0; i < potwet_1_json.features.length; i++){
+                    potential_wet1_layer_Array[i].setMap(null);//E: IT SETS THE POLYGONS over the BASEMAP
+                }
+            }
+        });
+
+        //EE: Google-click event to draw or undraw when 'capa_3_checkbox' is clicked. This draws or
+        // cleans everything (all maps) from watershed
+        google.maps.event.addDomListener(capa_4_checkbox,'click',function(){
+            if (capa_4_checkbox.checked){
+                for (var i = 0; i < exist_wets_json.features.length; i++){
+                    exist_wets_layer_Array[i].setMap(basemap);//E: IT SETS THE POLYGONS over the BASEMAP
+                }
+                for (var i = 0; i < potwet_1_json.features.length; i++){
+                    potential_wet1_layer_Array[i].setMap(basemap);//E: IT SETS THE POLYGONS over the BASEMAP
+                }
+            }else{
+                for (var i = 0; i < exist_wets_json.features.length; i++){
+                    exist_wets_layer_Array[i].setMap(null);//E: IT SETS THE POLYGONS over the BASEMAP
+                }
+                for (var i = 0; i < potwet_1_json.features.length; i++){
+                    potential_wet1_layer_Array[i].setMap(null);//E: IT SETS THE POLYGONS over the BASEMAP
+                }
+            }
+        });
+
+        // --------------- End: Dynamic of (4) Wetlands Pot&Existing ------------------- //
+
+
+
+
+        // ========================== End: Make dynamic when checkbox is clicked ========================== //
+
+
+
+        // ---------------- Start: draw watershed_border --------- //
+        // ----------------- E: Draw Watershed maps
+        draw_watershed_border();
+        draw_subbasins();
+        draw_streams();
+        // ----------------- E: Draw Government Units
+        draw_states();
+        draw_counties();
+        draw_or_cities();
+        // ----------------- E: Draw monitoring points
+        draw_weather_points();
+        draw_stream_station_points();
+        // ----------------- E: Draw Potential and Existing Wetlands
+        draw_existing_wets();
+        draw_potwet_1();
+        // ----------------- E: Draw Soil maps
+        // draw_soil_drain();
+        // draw_soil_hydro();
+        //------------------------------ End: Draw polygons, Polylines, Points, etc. Their respective functions are below
+
+        // ---------------------- Start: Transference of type_of_map clicked -------------------------//
+        //E: Bring 'type of map' from 'dmw_features.html' and check its checkbox and load its map
+
+        //E: Get the type of map clicked
+        var clicked_map = localStorage.getItem("which_map");//EE: 'which_map' comes from its parent html file
+        document.getElementById(clicked_map).checked = true;//E: call the DOM element
+
+        //E: Load the clicked map
+        // alert("switch: "+clicked_map);//E: For test
+        // watershed_border.setMap(basemap);
+        switch (clicked_map) {
+            case "border":
+                watershed_border.setMap(basemap);
+                break;
+            case "ugb":
+                // alert ("testing");
+                watershed_border.setMap(basemap);
+                for (var i = 0; i < or_cities_json.features.length; i++){
+                    city_layer_Array[i].setMap(basemap);//E: IT SETS THE POLYGONS over the BASEMAP
+                }
+                break;
+            case "stream_st"://E:
+                watershed_border.setMap(basemap);
+                for (var i = 0; i < stream_points_json.features.length; i++){
+                    stream_st_points_Array1[i].setMap(basemap);//E: IT SETS THE POLYGONS over the BASEMAP
+                }
+                break;
+            case "pot_wets":
+                watershed_border.setMap(basemap);
+                for (var i = 0; i < potwet_1_json.features.length; i++){
+                    potential_wet1_layer_Array[i].setMap(basemap);//E: IT SETS THE POLYGONS over the BASEMAP
+                }
+                break;
+            // case "land_cover":
+            //     watershed_border.setMap(basemap);
+            //     break;
+            // case "ssurgo":
+            //     watershed_border.setMap(basemap);
+            //     break;
+            default:
+                watershed_border.setMap(basemap);
+                break;
+        }
+
+        // ---------------------- End: Transference of type_of_map clicked -------------------------//
+
+
+
+        // ------------ Start: Draw Watershed border function (Polygons) ------------ //
+        function draw_watershed_border (){
+            //E: Set coordinates by using a function. It uses JSON data from external file
+            // alert("L.523: "+border_json.features[0].geometry['coordinates'].length);
+            var newCoordinates = constructNewCoordinates(border_json.features[0].geometry);//EE: Function is Set at 1069
+
+            //E: Set parameters for polygons (This include coordinates from above step)
+            watershed_border = new google.maps.Polygon({
+                path: newCoordinates,
+                // map: basemap
+                strokeColor: '#800000', strokeOpacity: 1, strokeWeight: 2,//E: attributes for line
+                fillOpacity: 0.1, fillColor: "#88ff4d",//E: attributes for area
+                // clickable: true,
+                // indexID: whichNode
+            });
+
+            // //E: Set the previous polygons into the basemap
+            // //EE: This is OFF for dynamic clickbox purpose
+            // watershed_border.setMap(basemap);//E: IT SETS THE POLYGONS over the BASEMAP
+
+
+            //E: Set polygon's info to show when the user clicks over the polygon.
+            var acres = border_json.properties[0]["area_mi2"];//EE:
+            var listAll = '<h4><strong> Dairy-McKay Watershed </strong></h4>' + 'Watershed Area: ' + acres + '  sq. mi.<br>';
+            var obj = {'list': listAll};
+            watershed_border.objInfo = obj;
+
+            //E: Add a click-event to the map to show the previous info ('watershed_border') when the user makes click over the map
+            google.maps.event.addListener(watershed_border, 'click', function (event) {
+                // $('.displayStuff').html(this.objInfo.list);
+                // alert("objInfo: " +"\n"+ this.objInfo.list);
+                // var window_info = this.objInfo.list + '<br><div class="displayStuffb" name="What Do They Mean">' +
+                //     '<a target="_blank" href="infoBox.html" rel="shadowbox;height=640;width=620" name="What Do They Mean">' +
+                //     '<strong><em name="What Do They Mean">What do these numbers* mean?</em></strong></a></div>';
+                var window_info = this.objInfo.list;
+                infowindow2 = new google.maps.InfoWindow({//E: it makes a window with information
+                    content: window_info,
+                    position: event.latLng
+                });
+                infowindow2.open(basemap);//E: The window with information is added to the basemap.
+            });
+
+            //E: All polygons are saved into an Array to be called later. Not needed for 'Watershed border' because it has only ONE polygon.
+            // watershed_border_Array.push(watershed_border);
+        }
+        // ------------ End: Draw Watershed border function (Polygons) ------------ //
+
+        // ------------ Start: Draw Sub-basin function (Polygons) ------------ //
+        function draw_subbasins (){
+            for (var i = 0; i < subbasin_json.features.length; i++){
+                //E: Setting coordinates
+                var newCoordinates = [];//EE: For polygons or sub-basins
+                newCoordinates = constructNewCoordinates(subbasin_json.features[i].geometry);//EE: Function is Set at 85
+
+                //E: Set attibutes of polygons
+                var whichNode = subbasin_json.properties[i]["Subbasin"].toString();//E: For "ecw"
+                var acres = subbasin_json.properties[i]["area_ac"];//EE:
+                acres = Math.round(acres * 100) / 100;
+                var rivers = subbasin_json.properties[i]["stream_mi"];//EE:
+                rivers = Math.round(rivers * 1000) / 1000;
+
+                //E: Settings parameteres for polygon. "subbasin_layer" should be defined above to get a dynamic map when it is called from "dmw_features.html"
+                subbasin_layer = new google.maps.Polygon({
+                    path: newCoordinates,
+                    // map: basemap
+                    strokeColor: '#800000', strokeOpacity: .6, strokeWeight: 1,
+                    fillOpacity: 0.3, fillColor: "#66ff1a",//"#ffb366",// "#ff99cc",// "#aaff80",// "#ffff99",//"#ffffff",
+                });
+
+                // //E: Set the current polygon into the basemap. By the all the for-loop, all polygons are set drawn.
+                // //EE: This is OFF for dynamic clickbox purpose
+                // subbasin_layer.setMap(basemap);//E: IT SETS THE POLYGONS over the BASEMAP
+
+                // ------------ Start: List of data to show when click over sub-basins ------------ //
+                var listAll = '<h4><strong> Dairy-McKay Watershed </strong></h4>' +
+                    'Sub basin: # ' + whichNode + '<br>'+'Watershed Area: ' + acres + '  sq. mi.<br>';
+                // var listAll = 'Dairy-McKay Watershed </br>' + 'Watershed Area: ' + acres + '  sq. mi.<br>';
+                var obj = {
+                    'list': listAll
+                };
+                subbasin_layer.objInfo = obj;
+
+                google.maps.event.addListener(subbasin_layer, 'click', function (event) {
+                    // $('.displayStuff').html(this.objInfo.list);
+                    // var window_info = this.objInfo.list + '<br><div class="displayStuffb" name="What Do They Mean">' +
+                    //     '<a target="_blank" href="infoBox.html" rel="shadowbox;height=640;width=620" name="What Do They Mean">' +
+                    //     '<strong><em name="What Do They Mean">What do these numbers* mean?</em></strong></a></div>';
+                    var window_info = this.objInfo.list;
+                    infowindow2 = new google.maps.InfoWindow({//E: it makes a window with information
+                        content: window_info,
+                        position: event.latLng
+                    });
+                    infowindow2.open(basemap);//E: The window with information is added to the basemap.
+                });
+
+                // //E: All polygons are saved into an Array to be called later.
+                subbasin_layer_Array.push(subbasin_layer);
+                //E: Second way to set the current polygon.
+                // subbasin_layer_Array[i].setMap(basemap);//E: It sets the current polygon over the BASEMAP
+            }
+        }
+        // ------------ End: Draw Sub-basin function (Polygons) ------------ //
+
+        // ------------ Start: Draw Streams function (Polylines) ------------ //
+        function draw_streams (){
+            //EE: This loop changes the 'geometry.type' name from "LineString" to "Polyline" in json data generated by
+            // the python program, to be executed by google chart (otherwise it does not draw lines)
+            var streams_for_fs = stream_json;//EE: make a copy of the json-data coming from "/data/dmw_stream.js"
+            for (var i = 0; i < stream_json.features.length; i++) {
+                streams_for_fs.features[i].geometry.type = "Polyline";
+                // if (i < 5) console.log("L.114 - " + JSON.stringify(streams_for_fs.features[i]));//EE: to see the first coordinates
+            }
+
+            //E: Loop through all the polylines (streams)
+            for (var i = 0; i < streams_for_fs.features.length; i++){
+                var newCoordinates_stream = [];
+                var newCoordinates_stream = constructNewCoordinates(streams_for_fs.features[i].geometry);
+
+                //E: features for drawing polylines
+                var streamColor = "#000099";//E: color for streams is defined here by "streamColor" variable
+                stream_layer = new google.maps.Polyline({
+                    path: newCoordinates_stream,
+                    strokeColor: streamColor, strokeOpacity: 0.7, strokeWeight: 2,
+                    // fillColor: "#daca43",
+                    zIndex: 10
+                });
+
+                // //E: This sets the previous data (coordinates) into the "basemap"
+                // //EE: This is OFF for dynamic clickbox purpose
+                // stream_layer.setMap(basemap);
+
+
+                //E: Add events in the map
+                var whichNode = streams_for_fs.properties[i]["subbasin"].toString();//E: For "ecw"
+                var rivers = streams_for_fs.properties[i]["length"];//EE:
+                rivers = Math.round(rivers * 100) / 100;
+                // var listAll = 'Sub basin: <strong># ' + whichNode + '</strong><br>'+'Stream length: ' + rivers + '  mi<br>';
+                var listAll = 'Sub basin: <strong># ' + whichNode + '</strong><br>';
+
+                var obj = {
+                    'list': listAll
+                };
+
+                stream_layer.objInfo = obj;
+                google.maps.event.addListener(stream_layer, 'mouseover', function(event) {
+                    var window_info = this.objInfo.list;
+                    infowindow2 = new google.maps.InfoWindow({//E: it makes a window with information
+                        content: window_info,
+                        position: event.latLng
+                    });
+                    infowindow2.open(basemap);//E: The window with information is added to the basemap.
+                });
+
+                //E: Hide the infowindow when user mouses-out
+                google.maps.event.addListener(stream_layer,'mouseout', function() {
+                    infowindow2.close();
+                });
+
+                //E: Save polylines into an array.
+                stream_layer_Array.push(stream_layer);
+                //E: Second way to set the current polygon.
+                // stream_layer_Array[i].setMap(basemap);//E: It sets the current polygon over the BASEMAP
+
+            }
+        }
+        // ------------ End: Draw Streams function (Polylines) ------------ //
+
+        // ------------ Start: Draw States with holes function (Polygon_Holes) ------------ //
+        function draw_states (){
+            var coord_for_polygs = [];
+
+            for (var i = 0; i < states_json.features.length; i++){
+                // //E: Set coordinates by using a function. It uses JSON data from external file
+                // alert("L.825: Polygon: "+(i+1)+";  # Elements: "+soil_hydro_json.features[i].geometry['coordinates'].length);
+                coord_for_polygs = construct_Polygon_Coordinates_holes(states_json.features[i].geometry,i);//EE: Function is Set below
+
+                //E: Set parameters for polygons (This include coordinates from above step)
+                states_layer = new google.maps.Polygon({
+                    paths: coord_for_polygs,//E: 'coord_for_polygs' contains outer and inner for each attibute or row
+                    // map: basemap
+                    strokeColor: '#262626', strokeOpacity: 0.8, strokeWeight: 2,//E: attributes for line
+                    fillColor: "#cccccc", fillOpacity: 0.1, //"#ffb366",// "#ff99cc",// "#aaff80",//E: attributes for area
+                    // clickable: true,
+                    // indexID: whichNode
+                });
+                //
+                // //E: Set the previous polygons into the basemap
+                // //EE: This is OFF for dynamic clickbox purpose
+                // states_layer.setMap(basemap);//E: IT SETS THE POLYGONS over the BASEMAP
+
+
+                //E: Set polygon's info to show when the user clicks over the polygon.
+                var stpo = states_json.properties[i]["STPO"];//E:
+                var state_id = states_json.properties[i]["FIPS_C"];//E:
+                var state_name = states_json.properties[i]["STATENAME"];//E:
+
+                var listAll = '<h4><strong> OREGON STATE </strong></h4>' + 'STPO: ' + stpo + '  .<br>'+
+                    'State ID: '+ state_id+ '  .<br>'+' State Name: '+state_name+'.';
+                var obj = {'list': listAll};
+                states_layer.objInfo = obj;
+
+                //E: Add a click-event to the map to show the previous info ('watershed_border') when the user makes click over the map
+                google.maps.event.addListener(states_layer, 'click', function (event) {
+                    // $('.displayStuff').html(this.objInfo.list);
+                    // alert("objInfo: " +"\n"+ this.objInfo.list);
+                    // var window_info = this.objInfo.list + '<br><div class="displayStuffb" name="What Do They Mean">' +
+                    //     '<a target="_blank" href="infoBox.html" rel="shadowbox;height=640;width=620" name="What Do They Mean">' +
+                    //     '<strong><em name="What Do They Mean">What do these numbers* mean?</em></strong></a></div>';
+                    var window_info = this.objInfo.list;
+                    infowindow2 = new google.maps.InfoWindow({//E: it makes a window with information
+                        content: window_info,
+                        position: event.latLng
+                    });
+                    infowindow2.open(basemap);//E: The window with information is added to the basemap.
+                });
+
+                // //E: All polygons are saved into an Array to be called later. Not needed for contour because it has only ONE polygon.
+                states_layer_Array.push(states_layer);
+            }
+        }
+        // ------------ End: Draw States with holes function (Polygon_Holes) ------------ //
+
+
+        // ------------ Start: Draw Counties with holes function (Polygon_Holes) ------------ //
+        function draw_counties (){
+            var coord_for_polygs = [];
+
+            for (var i = 0; i < counties_json.features.length; i++){
+                // //E: Set coordinates by using a function. It uses JSON data from external file
+                // alert("L.825: Polygon: "+(i+1)+";  # Elements: "+soil_hydro_json.features[i].geometry['coordinates'].length);
+                coord_for_polygs = construct_Polygon_Coordinates_holes(counties_json.features[i].geometry,i);//EE: Function is Set below
+
+                //E: Set parameters for polygons (This include coordinates from above step)
+                county_layer = new google.maps.Polygon({
+                    paths: coord_for_polygs,//E: 'coord_for_polygs' contains outer and inner for each attibute or row
+                    // map: basemap
+                    strokeColor: '#262626', strokeOpacity: 1, strokeWeight: 1,//E: attributes for line
+                    fillColor: "#b3b3b3", fillOpacity: 0.2, //"#ffb366",// "#ff99cc",// "#aaff80",//E: attributes for area
+                    // icons: [{icon: lineSymbol, offset: '0', repeat: '10px'}],
+                    // clickable: true,
+                    // indexID: whichNode
+                });
+
+                // //E: Set the previous polygons into the basemap
+                // //EE: This is OFF for dynamic clickbox purpose
+                // county_layer.setMap(basemap);//E: IT SETS THE POLYGONS over the BASEMAP
+
+
+                //E: Set polygon's info to show when the user clicks over the polygon.
+                var fips_c = counties_json.properties[i]["FIPS_C"];//E:
+                var stpo = counties_json.properties[i]["STPO"];//E:
+                var county_name = counties_json.properties[i]["COUNTYNAME"];//E:
+                var state_name = counties_json.properties[i]["STATENAME"];//E:
+
+                var listAll = '<h4><strong> OREGON STATE </strong></h4>' + 'STPO: ' + stpo + '  .<br>'+
+                    'County ID: '+ fips_c+ '  .<br>'+' County Name: '+county_name+'.<br>'+' State Name: '+state_name+'.';
+                var obj = {'list': listAll};
+                county_layer.objInfo = obj;
+
+                //E: Add a click-event to the map to show the previous info ('watershed_border') when the user makes click over the map
+                google.maps.event.addListener(county_layer, 'click', function (event) {
+                    // $('.displayStuff').html(this.objInfo.list);
+                    // alert("objInfo: " +"\n"+ this.objInfo.list);
+                    // var window_info = this.objInfo.list + '<br><div class="displayStuffb" name="What Do They Mean">' +
+                    //     '<a target="_blank" href="infoBox.html" rel="shadowbox;height=640;width=620" name="What Do They Mean">' +
+                    //     '<strong><em name="What Do They Mean">What do these numbers* mean?</em></strong></a></div>';
+                    var window_info = this.objInfo.list;
+                    infowindow2 = new google.maps.InfoWindow({//E: it makes a window with information
+                        content: window_info,
+                        position: event.latLng
+                    });
+                    infowindow2.open(basemap);//E: The window with information is added to the basemap.
+                });
+
+                //E: All polygons are saved into an Array to be called later. Not needed for contour.
+                county_layer_Array.push(county_layer);
+            }
+        }
+        // ------------ End: Draw Counties with holes function (Polygon_Holes) ------------ //
+
+
+        // ------------ Start: Draw OR Cities with holes function (Polygon_Holes) ------------ //
+        function draw_or_cities (){
+            var coord_for_polygs = [];
+
+            for (var i = 0; i < or_cities_json.features.length; i++){
+                // //E: Set coordinates by using a function. It uses JSON data from external file
+                // alert("L.825: Polygon: "+(i+1)+";  # Elements: "+soil_hydro_json.features[i].geometry['coordinates'].length);
+                coord_for_polygs = construct_Polygon_Coordinates_holes(or_cities_json.features[i].geometry,i);//EE: Function is Set below
+
+                //E: Set parameters for polygons (This include coordinates from above step)
+                city_layer = new google.maps.Polygon({
+                    paths: coord_for_polygs,//E: 'coord_for_polygs' contains outer and inner for each attibute or row
+                    // map: basemap
+                    strokeColor: '#333333', strokeOpacity: 1, strokeWeight: 0.5,//E: attributes for line
+                    fillColor: "#808080", fillOpacity: 0.3, //"#ffb366",// "#ff99cc",// "#aaff80",//E: attributes for area
+                    // clickable: true,
+                    // indexID: whichNode
+                });
+
+
+                // //E: Set the previous polygons into the basemap
+                // //EE: This is OFF for dynamic clickbox purpose
+                // city_layer.setMap(basemap);//E: IT SETS THE POLYGONS over the BASEMAP
+
+
+                //E: Set polygon's info to show when the user clicks over the polygon.
+                var city_id = or_cities_json.properties[i]["GEOID10"];//E:
+                var city_name = or_cities_json.properties[i]["NAME10"];//E:
+                var area = or_cities_json.properties[i]["area_mi2"];//E:
+
+                var listAll = '<h4><strong> OREGON </strong></h4>' + 'City ID: ' + city_id + '  .<br>'+
+                    'City: '+ city_name+ '  .<br>'+' Area: '+area+'.';
+                var obj = {'list': listAll};
+                city_layer.objInfo = obj;
+
+                //E: Add a click-event to the map to show the previous info ('watershed_border') when the user makes click over the map
+                google.maps.event.addListener(city_layer, 'click', function (event) {
+                    // $('.displayStuff').html(this.objInfo.list);
+                    // alert("objInfo: " +"\n"+ this.objInfo.list);
+                    // var window_info = this.objInfo.list + '<br><div class="displayStuffb" name="What Do They Mean">' +
+                    //     '<a target="_blank" href="infoBox.html" rel="shadowbox;height=640;width=620" name="What Do They Mean">' +
+                    //     '<strong><em name="What Do They Mean">What do these numbers* mean?</em></strong></a></div>';
+                    var window_info = this.objInfo.list;
+                    infowindow2 = new google.maps.InfoWindow({//E: it makes a window with information
+                        content: window_info,
+                        position: event.latLng
+                    });
+                    infowindow2.open(basemap);//E: The window with information is added to the basemap.
+                });
+
+                //E: All polygons are saved into an Array to be called later. Not needed for contour.
+                city_layer_Array.push(city_layer);
+            }
+        }
+        // ------------ End: Draw OR Cities with holes function (Polygon_Holes) ------------ //
+
+
+        // ------------ Start: Draw weather points Function (Points) ------------ //
+        function draw_weather_points (){
+            //E: Loop through all the points (streams)
+            for (var i = 0; i < weather_points_json.features.length; i++){
+                //E: Get coordinates info from database
+                // alert ("coord: "+ JSON.stringify(weather_points_json.features[i].geometry["coordinates"]));
+                var x_coord = weather_points_json.features[i].geometry["coordinates"][0];
+                var y_coord = weather_points_json.features[i].geometry["coordinates"][1];
+
+                //E: Build coordinates as obj by using a function. It builds 2 coords to play when zooming
+                var newCoordinates_points = [];
+                newCoordinates_points = construct_weather_Coordinates(x_coord, y_coord);
+                var geop1 = newCoordinates_points[0];//E: this has coord. and properties for one type of points
+                var geop2 = newCoordinates_points[1];//E: this has coord. and properties for the second type of points
+
+
+                // //E: Set the previous points into the basemap
+                // //EE: These are OFF for dynamic clickbox purpose
+                // geop1.setMap(basemap);
+                // geop2.setMap(basemap);
+
+                //E: Save coordinates object as Array, to be called after when we want to delete or upload again
+                weather_points_Array1.push(geop1);//E: All 'geop1' are saved as array to be called after when we want to unset points
+                weather_points_Array2.push(geop2);
+
+                //E: Set attributes of points
+                var station_id = weather_points_json.properties[i]["Station_Co"];//E: Get station name
+                var station_name = weather_points_json.properties[i]["Station_na"];//E: Get station name
+                var agency = weather_points_json.properties[i]["Source"];//E: Get station ID
+                // alert ("L.636 Station name: "+ station_name +";  Station ID: "+station_id);
+
+                //E: Set attributes as list
+                var listAll = 'Weather station ID: <strong> ' + station_id + '</strong><br>'+
+                    'Weather-station name: ' + station_name+'.<br>'+'Agency: '+agency+'.';
+                var obj = {
+                    'list': listAll
+                };
+
+                //E: Set google-map event to set the previous attributes-list
+                geop1.objInfo = obj;
+                google.maps.event.addListener(geop1, 'click', function(event) {
+                    var window_info = this.objInfo.list;
+                    infowindow2 = new google.maps.InfoWindow({//E: it makes a window with information
+                        content: window_info,
+                        position: event.latLng
+                    });
+                    infowindow2.open(basemap);//E: The window with information is added to the basemap.
+                });
+            }
+
+            //E: This event makes visible the 'Point' markers when zoom>=10
+            google.maps.event.addListener(basemap, 'zoom_changed', function() {
+                var zoom = basemap.getZoom();
+                // iterate over markers and call setVisible
+                for (i = 0; i < weather_points_Array1.length; i++) {
+                    weather_points_Array1[i].setVisible(zoom >= 9.5);
+                }
+            });
+            google.maps.event.addListener(basemap, 'zoom_changed', function() {
+                var zoom = basemap.getZoom();
+                // iterate over markers and call setVisible
+                for (i = 0; i < weather_points_Array2.length; i++) {
+                    weather_points_Array2[i].setVisible(zoom < 9.5);
+                }
+            });
+        }
+        // ------------ End: Draw weather points Function (Points) ------------ //
+
+
+        // ------------ Start: Draw weather points Function (Points) ------------ //
+        function draw_stream_station_points (){
+            //E: Loop through all the points (streams)
+            for (var i = 0; i < stream_points_json.features.length; i++){
+                //E: Get coordinates info from database
+                // alert ("coord: "+ JSON.stringify(stream_points_json.features[i].geometry["coordinates"]));
+                var x_coord = stream_points_json.features[i].geometry["coordinates"][0];
+                var y_coord = stream_points_json.features[i].geometry["coordinates"][1];
+
+                //E: Build coordinates as obj by using a function. It builds 2 coords to play when zooming
+                var newCoordinates_points = [];
+                newCoordinates_points = construct_stream_st_Coordinates(x_coord, y_coord);
+                var geop1 = newCoordinates_points[0];//E: this has coord. and properties for one type of points
+                var geop2 = newCoordinates_points[1];//E: this has coord. and properties for the second type of points
+
+
+                // //E: Set the previous points into the basemap
+                // //EE: These are OFF for dynamic clickbox purpose
+                // geop1.setMap(basemap);
+                // geop2.setMap(basemap);
+
+                //E: Save coordinates object as Array, to be called after when we want to delete or upload again
+                stream_st_points_Array1.push(geop1);//E: All 'geop1' are saved as array to be called after when we want to unset points
+                stream_st_points_Array2.push(geop2);
+
+                //E: Set attributes of points
+                var station_name = stream_points_json.properties[i]["Station_na"];//E: Get station name
+                var station_id = stream_points_json.properties[i]["Station_Co"];//E: Get station ID
+                var agency = stream_points_json.properties[i]["Agency"];//E: Get station ID
+                // alert ("L.636 Station name: "+ station_name +";  Station ID: "+station_id);
+
+                //E: Set attributes as list
+                var listAll = 'Weather station ID: <strong> ' + station_id + '</strong><br>'+
+                    'Weather station name: ' + station_name;
+                var listAll = 'Stream station ID: <strong> ' + station_id + '</strong><br>'+
+                    'Stream-station name: ' + station_name+'.<br>'+'Agency: '+agency+'.';
+                var obj = {
+                    'list': listAll
+                };
+
+                //E: Set google-map event to set the previous attributes-list
+                geop1.objInfo = obj;
+                google.maps.event.addListener(geop1, 'click', function(event) {
+                    var window_info = this.objInfo.list;
+                    infowindow2 = new google.maps.InfoWindow({//E: it makes a window with information
+                        content: window_info,
+                        position: event.latLng
+                    });
+                    infowindow2.open(basemap);//E: The window with information is added to the basemap.
+                });
+            }
+
+            //E: This event makes visible the 'Point' markers when zoom>=10
+            google.maps.event.addListener(basemap, 'zoom_changed', function() {
+                var zoom = basemap.getZoom();
+                // iterate over markers and call setVisible
+                for (i = 0; i < stream_st_points_Array1.length; i++) {
+                    stream_st_points_Array1[i].setVisible(zoom >= 9.5);
+                }
+            });
+            google.maps.event.addListener(basemap, 'zoom_changed', function() {
+                var zoom = basemap.getZoom();
+                // iterate over markers and call setVisible
+                for (i = 0; i < stream_st_points_Array2.length; i++) {
+                    stream_st_points_Array2[i].setVisible(zoom < 9.5);
+                }
+            });
+        }
+        // ------------ End: Draw weather points Function (Points) ------------ //
+
+
+        // ------------ Start: Draw potwet_1 polygon with holes function (Polygon_Holes) ------------ //
+        function draw_existing_wets (){
+            var coord_for_polygs = [];
+
+            for (var i = 0; i < exist_wets_json.features.length; i++){
+                // //E: Set coordinates by using a function. It uses JSON data from external file
+                // alert("L.825: Polygon: "+(i+1)+";  # Elements: "+exist_wets_json.features[i].geometry['coordinates'].length);
+                coord_for_polygs = construct_Polygon_Coordinates_holes(exist_wets_json.features[i].geometry,i);//EE: Function is Set below
+
+                //E: Set parameters for polygons (This include coordinates from above step)
+                exist_wets_layer = new google.maps.Polygon({
+                    paths: coord_for_polygs,//E: 'coord_for_polygs' contains outer and inner for each attibute or row
+                    // map: basemap
+                    strokeColor: '#008ae6', strokeOpacity: 1, strokeWeight: 0.5,//E: attributes for line
+                    fillColor: "#4db8ff", fillOpacity: 0.3, //"#ffb366",// "#ff99cc",// "#aaff80",//E: attributes for area
+                    // clickable: true,
+                    // indexID: whichNode
+                });
+
+
+                // //E: Set the previous polygons into the basemap
+                // //EE: This is OFF for dynamic clickbox purpose
+                // exist_wets_layer.setMap(basemap);//E: IT SETS THE POLYGONS over the BASEMAP
+
+
+                //E: Set polygon's info to show when the user clicks over the polygon.
+                var exwet_type = exist_wets_json.properties[i]["WETLAND_TY"];
+                var area = exist_wets_json.properties[i]["ACRES"];//E:
+                // var perimeter = exist_wets_json.properties[i]["perim"];//E:
+
+                var listAll = '<h4><strong> Existing Wetlands </strong></h4>' + 'Type of wetland: ' + exwet_type + '  .<br>'+
+                    'Area: '+ area;
+                var obj = {'list': listAll};
+                exist_wets_layer.objInfo = obj;
+
+                //E: Add a click-event to the map to show the previous info ('watershed_border') when the user makes click over the map
+                google.maps.event.addListener(exist_wets_layer, 'click', function (event) {
+                    // $('.displayStuff').html(this.objInfo.list);
+                    // alert("objInfo: " +"\n"+ this.objInfo.list);
+                    // var window_info = this.objInfo.list + '<br><div class="displayStuffb" name="What Do They Mean">' +
+                    //     '<a target="_blank" href="infoBox.html" rel="shadowbox;height=640;width=620" name="What Do They Mean">' +
+                    //     '<strong><em name="What Do They Mean">What do these numbers* mean?</em></strong></a></div>';
+                    var window_info = this.objInfo.list;
+                    infowindow2 = new google.maps.InfoWindow({//E: it makes a window with information
+                        content: window_info,
+                        position: event.latLng
+                    });
+                    infowindow2.open(basemap);//E: The window with information is added to the basemap.
+                });
+
+                //E: All polygons are saved into an Array to be called later. Not needed for contour.
+                exist_wets_layer_Array.push(exist_wets_layer);
+            }
+        }
+        // ------------ End: Draw Soil_Drain polygon with holes function (Polygon_Holes) ------------ //
+
+
+        // ------------ Start: Draw potwet_1 polygon with holes function (Polygon_Holes) ------------ //
+        function draw_potwet_1 (){
+            var coord_for_polygs = [];
+
+            for (var i = 0; i < potwet_1_json.features.length; i++){
+                // //E: Set coordinates by using a function. It uses JSON data from external file
+                // alert("L.825: Polygon: "+(i+1)+";  # Elements: "+potwet_1_json.features[i].geometry['coordinates'].length);
+                coord_for_polygs = construct_Polygon_Coordinates_holes(potwet_1_json.features[i].geometry,i);//EE: Function is Set below
+
+                //E: Set parameters for polygons (This include coordinates from above step)
+                potential_wet1_layer = new google.maps.Polygon({
+                    paths: coord_for_polygs,//E: 'coord_for_polygs' contains outer and inner for each attibute or row
+                    // map: basemap
+                    strokeColor: '#cc33ff', strokeOpacity: 1, strokeWeight: 0.5,//E: attributes for line
+                    fillColor: "#df80ff", fillOpacity: 0.3, //"#ffb366",// "#ff99cc",// "#aaff80",//E: attributes for area
+                    // clickable: true,
+                    // indexID: whichNode
+                });
+
+
+                // //E: Set the previous polygons into the basemap.
+                // //EE: This is OFF for dynamic clickbox purpose
+                // potential_wet1_layer.setMap(basemap);//E: IT SETS THE POLYGONS over the BASEMAP
+
+
+                //E: Set polygon's info to show when the user clicks over the polygon.
+                var area = potwet_1_json.properties[i]["area"];//E:
+                var perimeter = potwet_1_json.properties[i]["perim"];//E:
+
+                var listAll = '<h4><strong> Dairy-McKay Watershed </strong></h4>' + 'Area: ' + area + '  .<br>'+
+                    'Perimeter: '+ perimeter;
+                var obj = {'list': listAll};
+                potential_wet1_layer.objInfo = obj;
+
+                //E: Add a click-event to the map to show the previous info ('watershed_border') when the user makes click over the map
+                google.maps.event.addListener(potential_wet1_layer, 'click', function (event) {
+                    // $('.displayStuff').html(this.objInfo.list);
+                    // alert("objInfo: " +"\n"+ this.objInfo.list);
+                    // var window_info = this.objInfo.list + '<br><div class="displayStuffb" name="What Do They Mean">' +
+                    //     '<a target="_blank" href="infoBox.html" rel="shadowbox;height=640;width=620" name="What Do They Mean">' +
+                    //     '<strong><em name="What Do They Mean">What do these numbers* mean?</em></strong></a></div>';
+                    var window_info = this.objInfo.list;
+                    infowindow2 = new google.maps.InfoWindow({//E: it makes a window with information
+                        content: window_info,
+                        position: event.latLng
+                    });
+                    infowindow2.open(basemap);//E: The window with information is added to the basemap.
+                });
+
+                //E: All polygons are saved into an Array to be called later. Not needed for contour.
+                potential_wet1_layer_Array.push(potential_wet1_layer);
+            }
+        }
+        // ------------ End: Draw Soil_Drain polygon with holes function (Polygon_Holes) ------------ //
+
+
+
+        // ------------ Start: Draw Soil_Drain polygon with holes function (Polygon_Holes) ------------ //
+        function draw_soil_drain (){
+            var coord_for_polygs = [];
+
+            for (var i = 0; i < soil_drain_json.features.length; i++){
+                // //E: Set coordinates by using a function. It uses JSON data from external file
+                // alert("L.825: Polygon: "+(i+1)+";  # Elements: "+soil_drain_json.features[i].geometry['coordinates'].length);
+                coord_for_polygs = construct_Polygon_Coordinates_holes(soil_drain_json.features[i].geometry,i);//EE: Function is Set below
+
+                //E: Set parameters for polygons (This include coordinates from above step)
+                soilDrain_layer = new google.maps.Polygon({
+                    paths: coord_for_polygs,//E: 'coord_for_polygs' contains outer and inner for each attibute or row
+                    // map: basemap
+                    strokeColor: '#996600', strokeOpacity: 1, strokeWeight: 0.5,//E: attributes for line
+                    fillColor: "#e6ac00", fillOpacity: 0.3, //"#ffb366",// "#ff99cc",// "#aaff80",//E: attributes for area
+                    // clickable: true,
+                    // indexID: whichNode
+                });
+                //
+                // //E: Set the previous polygons into the basemap
+                // //EE: This is OFF for dynamic clickbox purpose
+                // soilDrain_layer.setMap(basemap);//E: IT SETS THE POLYGONS over the BASEMAP
+
+
+                //E: Set polygon's info to show when the user clicks over the polygon.
+                var drain_type = soil_drain_json.properties[i]["drclasswet"];//E:
+                var area = soil_drain_json.properties[i]["area_m2"];//E:
+
+                var listAll = '<h4><strong> Dairy-McKay Watershed </strong></h4>' + 'Drainage feature: ' + drain_type + '  .<br>'+
+                'Area: '+ area;
+                var obj = {'list': listAll};
+                soilDrain_layer.objInfo = obj;
+
+                //E: Add a click-event to the map to show the previous info ('watershed_border') when the user makes click over the map
+                google.maps.event.addListener(soilDrain_layer, 'click', function (event) {
+                    // $('.displayStuff').html(this.objInfo.list);
+                    // alert("objInfo: " +"\n"+ this.objInfo.list);
+                    // var window_info = this.objInfo.list + '<br><div class="displayStuffb" name="What Do They Mean">' +
+                    //     '<a target="_blank" href="infoBox.html" rel="shadowbox;height=640;width=620" name="What Do They Mean">' +
+                    //     '<strong><em name="What Do They Mean">What do these numbers* mean?</em></strong></a></div>';
+                    var window_info = this.objInfo.list;
+                    infowindow2 = new google.maps.InfoWindow({//E: it makes a window with information
+                        content: window_info,
+                        position: event.latLng
+                    });
+                    infowindow2.open(basemap);//E: The window with information is added to the basemap.
+                });
+
+                //E: All polygons are saved into an Array to be called later. Not needed for contour.
+                soilDrain_layer_Array.push(soilDrain_layer);
+            }
+        }
+        // ------------ End: Draw Soil_Drain polygon with holes function (Polygon_Holes) ------------ //
+
+
+        // ------------ Start: Draw Soil_Hydro polygon with holes function (Polygon_Holes) ------------ //
+        function draw_soil_hydro (){
+            var coord_for_polygs = [];
+
+            for (var i = 0; i < soil_hydro_json.features.length; i++){
+                // //E: Set coordinates by using a function. It uses JSON data from external file
+                // alert("L.825: Polygon: "+(i+1)+";  # Elements: "+soil_hydro_json.features[i].geometry['coordinates'].length);
+                coord_for_polygs = construct_Polygon_Coordinates_holes(soil_hydro_json.features[i].geometry,i);//EE: Function is Set below
+
+                //E: Set parameters for polygons (This include coordinates from above step)
+                soilhydro_layer = new google.maps.Polygon({
+                    paths: coord_for_polygs,//E: 'coord_for_polygs' contains outer and inner for each attibute or row
+                    // map: basemap
+                    strokeColor: '#996600', strokeOpacity: 1, strokeWeight: 0.5,//E: attributes for line
+                    fillColor: "#e6ac00", fillOpacity: 0.3, //"#ffb366",// "#ff99cc",// "#aaff80",//E: attributes for area
+                    // clickable: true,
+                    // indexID: whichNode
+                });
+                //
+                // //E: Set the previous polygons into the basemap
+                // //EE: This is OFF for dynamic clickbox purpose
+                // soilhydro_layer.setMap(basemap);//E: IT SETS THE POLYGONS over the BASEMAP
+
+
+                //E: Set polygon's info to show when the user clicks over the polygon.
+                var drain_type = soil_hydro_json.properties[i]["hydgrpdcd"];//E:
+                var area = soil_hydro_json.properties[i]["area_m2"];//E:
+
+                var listAll = '<h4><strong> Dairy-McKay Watershed </strong></h4>' + 'Drainage feature: ' + drain_type + '  .<br>'+
+                    'Area: '+ area+' mi2';
+                var obj = {'list': listAll};
+                soilhydro_layer.objInfo = obj;
+
+                //E: Add a click-event to the map to show the previous info ('watershed_border') when the user makes click over the map
+                google.maps.event.addListener(soilhydro_layer, 'click', function (event) {
+                    // $('.displayStuff').html(this.objInfo.list);
+                    // alert("objInfo: " +"\n"+ this.objInfo.list);
+                    // var window_info = this.objInfo.list + '<br><div class="displayStuffb" name="What Do They Mean">' +
+                    //     '<a target="_blank" href="infoBox.html" rel="shadowbox;height=640;width=620" name="What Do They Mean">' +
+                    //     '<strong><em name="What Do They Mean">What do these numbers* mean?</em></strong></a></div>';
+                    var window_info = this.objInfo.list;
+                    infowindow2 = new google.maps.InfoWindow({//E: it makes a window with information
+                        content: window_info,
+                        position: event.latLng
+                    });
+                    infowindow2.open(basemap);//E: The window with information is added to the basemap.
+                });
+
+                //E: All polygons are saved into an Array to be called later. Not needed for contour.
+                soilhydro_layer_Array.push(soilhydro_layer);
+            }
+        }
+        // ------------ End: Draw Soil_Hydro polygon with holes function (Polygon_Holes) ------------ //
+
+
+
+
+
+
+
+        // /////////////////////////////////////////////////////////////////////////////////
+        // ++++++++++++++  This is used to parse out (analyze) the long & lats for all the polygons +++++++++++++++++//
+        function constructNewCoordinates(polygon) {
+            var newCoordinates = [];
+            var coordinates = null;
+            if (polygon['coordinates'])
+                coordinates = polygon['coordinates'];
+            // alert("L.823 coordinates legth: "+coordinates.length);
+            if (coordinates.length == 1) {
+                coordinates = coordinates[0];
+            }
+            // alert(coordinates);
+            for (var i in coordinates) {
+                newCoordinates.push(
+                    new google.maps.LatLng(coordinates[i][1], coordinates[i][0]));//E:Set coodrinates in googlemap format
+            }//E: At the end 'newCoordinates' array has all coordinates for the polygon
+            return newCoordinates;
+        }
+        // +++++++++++++++++++++ end 'constructNewCoordinates(polygon)' +++++++++++++++++++++ //
+
+
+        // ------------ Start: coordinates for WEATHER markers ----------- //
+        // E: This builds coordinates, parameters, and sets google-markers for Markers
+        // Actually, two Markers are created. They will be displayed according the zoom map
+        function construct_weather_Coordinates(x, y) {
+            var geoOptions1 = {
+                // -------------------------- For squre 'Icon' (Icon from tillIcon)
+                // strokeColor: colors[0],
+                // strokeOpacity: 0.8,
+                // strokeWeight: 1,
+                // fillColor: colors[0],
+                // fillOpacity: 0.3,
+                // icon: tillIcon
+
+                // -------------------------- For 'text' (CC) as acronym (LARGE markers)
+                // //E: This 'label_icon' comes from 'dolabels()' which retrieves a DOM (box) from g2.php. Without this
+                // // Box, the label is shown with balloons.
+                // label: {text: "(C)", color: '#cc0000', fontSize: "10px", fontWeight: "bold"},
+                icon: weather_icon//label_icon//E: It comes from converting 'svg_to_img2('label_rect')'
+
+                // --------------- For 'Icon' drawn by using coordinates (CoverCrop)
+                // icon: {//E: square coordiantes
+                //     path: 'M 50,1 50,50 1,50 1,1 z', fillColor: '#ffffff',
+                //     fillOpacity: 0.5, scale: 0.18, strokeColor: '#404040', strokeWeight: 1
+                // }
+            };
+            // --------------------  For 'text' (CC) as acronym (SMALL markers)
+            var geoOptions2 = {
+                label: {text: "(C)", color: '#ff0000', fontSize: "5px"},
+                icon: label_icon//E: It comes from converting 'svg_to_img2('label_rect')'
+            };
+
+            // var opts = geoOptions;
+            // var opts1 = geoOptions1;
+            //var newCoordinates = [];
+            var coordinates = null;
+            // var coordinates = polygon['coordinates'];
+            coordinates = [x, y];
+            var options1 = geoOptions1;//opts || {};
+            var options2 = geoOptions2;// || {};
+            options1.position = new google.maps.LatLng(coordinates[1], coordinates[0]);
+            options2.position = new google.maps.LatLng(coordinates[1], coordinates[0]);
+
+            geo1 = new google.maps.Marker(options1);//E: For LARGE markers
+            geo2 = new google.maps.Marker(options2);//E: For SMALL markers
+            // return geo;
+            return [geo1,geo2];
+        }
+
+        // ------------ End: coordinates for WEATHER markers ----------- //
+
+
+        // ------------ Start: coordinates for STREAM station markers ----------- //
+        // E: This builds coordinates, parameters, and sets google-markers for Markers
+        // Actually, two Markers are created. They will be displayed according the zoom map
+        function construct_stream_st_Coordinates(x, y) {
+            var geoOptions1 = {
+                // -------------------------- For square 'Icon' (Icon from tillIcon)
+                // strokeColor: colors[0],
+                // strokeOpacity: 0.8,
+                // strokeWeight: 1,
+                // fillColor: colors[0],
+                // fillOpacity: 0.3,
+                // icon: tillIcon
+
+                // -------------------------- For 'text' (CC) as acronym (LARGE markers)
+                // //E: This 'label_icon' comes from 'dolabels()' which retrieves a DOM (box) from g2.php. Without this
+                // // Box, the label is shown with balloons.
+                // label: {text: "(C)", color: '#cc0000', fontSize: "10px", fontWeight: "bold"},
+                icon: stream_st_icon//label_icon//E: It comes from converting 'svg_to_img2('label_rect')'
+
+                // --------------- For 'Icon' drawn by using coordinates (CoverCrop)
+                // icon: {//E: square coordiantes
+                //     path: 'M 50,1 50,50 1,50 1,1 z', fillColor: '#ffffff',
+                //     fillOpacity: 0.5, scale: 0.18, strokeColor: '#404040', strokeWeight: 1
+                // }
+            };
+            // --------------------  For 'text' (CC) as acronym (SMALL markers)
+            var geoOptions2 = {
+                label: {text: "(C)", color: '#ff0000', fontSize: "5px"},
+                icon: label_icon2//E: It comes from converting 'svg_to_img2('label_rect')'
+            };
+
+            // var opts = geoOptions;
+            // var opts1 = geoOptions1;
+            //var newCoordinates = [];
+            var coordinates = null;
+            // var coordinates = polygon['coordinates'];
+            coordinates = [x, y];
+            var options1 = geoOptions1;//opts || {};
+            var options2 = geoOptions2;// || {};
+            options1.position = new google.maps.LatLng(coordinates[1], coordinates[0]);
+            options2.position = new google.maps.LatLng(coordinates[1], coordinates[0]);
+
+            geo1 = new google.maps.Marker(options1);//E: For LARGE markers
+            geo2 = new google.maps.Marker(options2);//E: For SMALL markers
+            // return geo;
+            return [geo1,geo2];
+        }
+
+        // ------------ End: coordinates for STREAM station markers ----------- //
+
+
+        // ---------------------- Start: Polygon's Coordinates with holes -------------- //
+        function construct_Polygon_Coordinates_holes(polygon, numb_poly) {
+            var coord_polyg_w_holes = [];
+            // alert("L.1017 #of elements: "+polygon['coordinates'].length);
+            for (var i in polygon['coordinates']) {
+                var coord_e_element = [];//E: This'll save coord. of each element of polygon (i.e. coord. for each outer, for each inner)
+                // alert("LLL: "+polygon['coordinates'][i].length);
+                for (j = 0; j < polygon['coordinates'][i].length; j++){
+                    coord_e_element.push({lng:polygon['coordinates'][i][j][0],lat:polygon['coordinates'][i][j][1]})
+                }
+                // alert(JSON.stringify(coord_e_element));
+                coord_polyg_w_holes.push(coord_e_element);
+            }
+            //E: WARNING It displays coordinates for the first polygon. WARNING huge info
+            // if (numb_poly==0) console.log("L.1021 coord. polygons including holes: \n"+JSON.stringify(coord_polyg_w_holes));//E: To much info to display
+            return coord_polyg_w_holes;
+        }
+        // ----------------------- End: Polygon's Coordinates with holes ----------------//
+
+    }
+</script>
+
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVNzONb19t-556kuu-ebT5DUF0wCpEt-g&callback=initMap" type="text/javascript"></script>
+
+</body>
+</html>
